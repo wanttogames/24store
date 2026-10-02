@@ -42,6 +42,12 @@ try {
   for (const action of ["customer", "product", "cctv"]) {
     await page.locator(`[data-action=${action}]`).click();
     await expect(page.locator("#dialog")).toBeVisible();
+    if (action === "cctv")
+      await expect
+        .poll(() =>
+          page.locator("#cctv-live-frame").evaluate((img) => img.naturalWidth),
+        )
+        .toBe(1280);
     await page.locator("#close-dialog").click();
   }
   await page.locator("[data-action=pay]").click();

@@ -53,6 +53,7 @@ export class App {
   private modal = false;
   private lastTick = performance.now();
   private minute = -1;
+  private cameraRequestAt = 0;
   private game: Phaser.Game;
   constructor() {
     this.audio.muted = this.save.muted;
@@ -74,7 +75,16 @@ export class App {
           this.save.run?.schedule[this.save.run.index]?.kind === "anomaly",
         );
     });
-    setInterval(() => this.tick(), 100);
+    window.addEventListener("store:cctv-image", (event) => {
+      const image =
+        document.querySelector<HTMLImageElement>("#cctv-live-frame");
+      if (image) image.src = (event as CustomEvent<string>).detail;
+    });
+    setInterval(() => {
+      this.tick();
+      if (this.modal && document.querySelector("#cctv-live-frame"))
+        this.requestCamera(false);
+    }, 200);
   }
   private mount() {
     document.querySelector("#app")!.innerHTML =
@@ -136,6 +146,8 @@ export class App {
                   ? this.save.run?.schedule[this.save.run.index]
                   : undefined,
               sanity: this.save.run?.sanity || 100,
+              day: this.save.run?.day || 1,
+              minute: this.minute,
             },
           }),
         ),
@@ -198,6 +210,19 @@ export class App {
       );
     this.persist();
   }
+  private requestCamera(force = true) {
+    if (!force && performance.now() - this.cameraRequestAt < 600) return;
+    this.cameraRequestAt = performance.now();
+    const image = document.querySelector<HTMLImageElement>("#cctv-live-frame");
+    window.dispatchEvent(
+      new CustomEvent("store:cctv-request", {
+        detail: { replay: image?.dataset.replay === "true" },
+      }),
+    );
+  }
+  private cameraFrame(replay = false) {
+    return `<div class="cctv-frame actual-feed"><div class="camera-viewport"><img id="cctv-live-frame" data-replay="${replay}" alt="현재 손님과 상품, 날짜를 보여주는 계산대 CCTV 영상"></div><span>${replay ? "ARCHIVE / STORED FRAME" : "CAM 01 / LIVE"}</span></div><button id="camera-zoom">영상 2배 확대</button>`;
+  }
   private handle(id: string) {
     this.audio.start();
     if (id === "new") {
@@ -250,7 +275,10 @@ export class App {
     }
     const feedback = decide(this.save, id as Action);
     if (id === "replay") {
-      this.open(`<h2>저장 영상 / 프레임 비교</h2><p>${escape(feedback)}</p>`);
+      this.open(
+        `<h2>저장 영상 / 프레임 비교</h2>${this.cameraFrame(true)}<p>${escape(feedback)}</p>`,
+      );
+      this.requestCamera();
       this.persist();
       return;
     }
@@ -285,14 +313,27 @@ export class App {
                 .join("\n")}\n${e.productClue}`;
     this.render();
     this.open(
-      `<div class="eyebrow">${id === "cctv" ? "CAMERA 01 / LIVE" : "NIGHT SHIFT / OBSERVATION"}</div><h2>${{ customer: "손님 관찰", product: "상품 · 바코드 조회", cctv: "CCTV 확대", memo: `점장 메모 / DAY ${r.day}` }[id]}</h2>${id === "cctv" ? '<div class="cctv-frame"><span>REC ●</span><div class="cctv-silhouette"></div><small>시간 · 형상 · 그림자 · 상품을 비교하세요</small></div>' : ""}<p class="clue-text">${escape(content)}</p>${r.sanity <= 40 && id === "product" ? '<small class="danger">POS 상품명이 순간적으로 「돌아오지 마」로 바뀝니다. 인쇄된 라벨을 비교하세요.</small>' : ""}`,
+      `<div class="eyebrow">${id === "cctv" ? "CAMERA 01 / LIVE" : "NIGHT SHIFT / OBSERVATION"}</div><h2>${{ customer: "손님 관찰", product: "상품 · 바코드 조회", cctv: "CCTV 확대", memo: `점장 메모 / DAY ${r.day}` }[id]}</h2>${id === "cctv" ? this.cameraFrame() : ""}<p class="clue-text">${escape(content)}</p>${r.sanity <= 40 && id === "product" ? '<small class="danger">POS 상품명이 순간적으로 「돌아오지 마」로 바뀝니다. 인쇄된 라벨을 비교하세요.</small>' : ""}`,
     );
+    if (id === "cctv") this.requestCamera();
     if (id === "product") this.audio.tone(1100);
   }
   private open(html: string) {
     this.modal = true;
     document.querySelector("#dialog-content")!.innerHTML = html;
     (document.querySelector("#dialog") as HTMLDialogElement).showModal();
+    document.querySelector("#camera-zoom")?.addEventListener("click", () => {
+      const frame = document.querySelector(".actual-feed")!;
+      const zoom = frame.classList.toggle("zoomed");
+      const viewport = document.querySelector(".camera-viewport")!;
+      viewport.scrollLeft = zoom
+        ? (viewport.scrollWidth - viewport.clientWidth) / 2
+        : 0;
+      viewport.scrollTop = zoom ? viewport.scrollHeight * 0.15 : 0;
+      document.querySelector("#camera-zoom")!.textContent = zoom
+        ? "전체 영상 보기"
+        : "영상 2배 확대";
+    });
   }
   private codex() {
     const list = [
@@ -334,6 +375,7 @@ export class App {
     const minute = currentMinute(e.minute, next, r.elapsed);
     if (minute !== this.minute) {
       this.minute = minute;
+      window.dispatchEvent(new CustomEvent("store:clock", { detail: minute }));
       const clock = document.querySelector("#clock");
       if (clock) clock.textContent = formatTime(minute);
     }

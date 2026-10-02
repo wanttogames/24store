@@ -13,5 +13,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: [BootScene, MenuScene, GameScene, DayResultScene, EndingScene],
   render: { antialias: true },
+  fps: { target: 30, forceSetTimeOut: true },
   audio: { noAudio: true },
 };
