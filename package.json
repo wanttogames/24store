@@ -1,0 +1,24 @@
+{
+  "name": "night-store-0317",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run",
+    "test:browser": "npm run build && node tests/browser-smoke.mjs",
+    "format": "prettier --write src tests README.md index.html package.json tsconfig.json vite.config.ts .github/workflows"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "prettier": "^3.9.9",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4"
+  }
+}
