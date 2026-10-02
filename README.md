@@ -57,7 +57,7 @@ npm run preview
 
 ## GitHub Pages
 
-`.github/workflows/pages.yml`은 수동 실행 전용입니다. 배포를 원하면 저장소 Settings → Pages → Source를 **GitHub Actions**로 선택하고 Actions → Deploy game to Pages → Run workflow를 실행하세요. 테스트와 빌드 후 배포합니다. 워크플로를 실행하기 전에는 자동 공개 배포하지 않습니다.
+`.github/workflows/pages.yml`은 `main`에 반영될 때 자동 배포하며 수동 실행도 지원합니다. 저장소 Settings → Pages → Source를 **GitHub Actions**로 선택하세요. 최초 설정 후 Actions → Deploy game to Pages → Run workflow를 실행하면 됩니다. 이후 변경은 테스트와 빌드 후 자동 배포됩니다. 실행 주소: https://wanttogames.github.io/24store/
 
 ## 저장
 
