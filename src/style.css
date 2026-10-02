@@ -235,6 +235,81 @@ main {
   line-height: 1.8;
   color: #8d9d85;
 }
+.menu-steps {
+  display: grid;
+  gap: 7px;
+  margin: 16px 0;
+  color: #c6d2b7;
+  font-size: 12px;
+}
+.menu-steps span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.menu-steps b,
+.guide-steps b {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #82916e;
+  border-radius: 50%;
+  color: #d5e2b4;
+  font: 11px monospace;
+  flex: 0 0 auto;
+}
+.play-guide {
+  padding: 15px 18px;
+  margin-top: 20px;
+  border: 1px solid #536349;
+  background: #1a281e;
+}
+.guide-title,
+.guide-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.guide-title > span:last-child {
+  color: #ced9b2;
+  font-size: 12px;
+}
+.guide-steps {
+  justify-content: flex-start;
+  gap: 22px;
+  margin-top: 12px;
+  color: #84917e;
+  font-size: 12px;
+}
+.guide-steps span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.guide-steps .current,
+.guide-steps .done {
+  color: #d5e2b4;
+}
+.guide-steps .done b {
+  background: #536848;
+}
+.practice-tip {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #344334;
+  color: #aab79f;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.practice-tip strong {
+  color: #e1d4a0;
+  margin-right: 8px;
+}
+.practice-tip b {
+  color: #e0e8c8;
+}
 .menu-actions {
   display: flex;
   flex-direction: column;
@@ -290,19 +365,27 @@ main {
 }
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 .action-grid button {
   text-align: left;
-  padding: 14px 10px;
+  padding: 11px 13px;
   font-size: 15px;
+  min-height: 79px;
 }
 .action-grid small {
   font: 10px monospace;
   display: block;
   opacity: 0.6;
   margin-bottom: 10px;
+}
+.action-help {
+  display: block;
+  margin-top: 6px;
+  color: #a9b6a1;
+  font-size: 10px;
+  line-height: 1.45;
 }
 .extra-actions {
   display: flex;
@@ -578,6 +661,9 @@ dialog p {
   .menu-panel p {
     font-size: 12px;
   }
+  .menu-steps {
+    font-size: 11px;
+  }
   .menu-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -589,6 +675,22 @@ dialog p {
     grid-template-columns: 1fr;
     gap: 22px;
     padding: 20px 0;
+  }
+  .play-guide {
+    padding: 13px;
+    margin-top: 14px;
+  }
+  .guide-steps {
+    gap: 8px 14px;
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+  .guide-steps b {
+    width: 20px;
+    height: 20px;
+  }
+  .practice-tip {
+    font-size: 11px;
   }
   .response-layout h2 {
     font-size: 20px;
@@ -603,8 +705,12 @@ dialog p {
     grid-template-columns: repeat(2, 1fr);
   }
   .action-grid button {
-    font-size: 15px;
-    min-height: 65px;
+    font-size: 14px;
+    min-height: 76px;
+    padding: 10px;
+  }
+  .action-help {
+    font-size: 9px;
   }
   .result-row {
     flex-wrap: wrap;
